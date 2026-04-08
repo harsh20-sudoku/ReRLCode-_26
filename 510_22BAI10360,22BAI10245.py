@@ -1,11 +1,3 @@
-"""
-Reinforcement Learning Project: Deep Q-Network (DQN) on CartPole-v1
-=====================================================================
-Algorithm : Deep Q-Network (DQN) with Experience Replay & Target Network
-Environment: CartPole-v1 (OpenAI Gymnasium)
-Author     : [Your Name]
-"""
-
 import gymnasium as gym
 import numpy as np
 import torch
@@ -15,9 +7,7 @@ import random
 from collections import deque
 import matplotlib.pyplot as plt
 
-# ──────────────────────────────────────────────
 # 1. HYPERPARAMETERS
-# ──────────────────────────────────────────────
 EPISODES        = 400       # Total training episodes
 GAMMA           = 0.99      # Discount factor
 LR              = 1e-3      # Learning rate
@@ -32,9 +22,7 @@ SOLVE_SCORE     = 195       # CartPole is "solved" at avg 195 over 100 eps
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {DEVICE}")
 
-# ──────────────────────────────────────────────
 # 2. NEURAL NETWORK (Q-Network)
-# ──────────────────────────────────────────────
 class QNetwork(nn.Module):
     """
     A simple 3-layer fully-connected network that maps
@@ -53,9 +41,7 @@ class QNetwork(nn.Module):
     def forward(self, x):
         return self.net(x)
 
-# ──────────────────────────────────────────────
 # 3. REPLAY BUFFER (Experience Replay)
-# ──────────────────────────────────────────────
 class ReplayBuffer:
     """
     Stores (state, action, reward, next_state, done) tuples.
@@ -81,9 +67,7 @@ class ReplayBuffer:
     def __len__(self):
         return len(self.buffer)
 
-# ──────────────────────────────────────────────
 # 4. DQN AGENT
-# ──────────────────────────────────────────────
 class DQNAgent:
     def __init__(self, state_dim, action_dim):
         self.action_dim = action_dim
@@ -137,9 +121,8 @@ class DQNAgent:
     def sync_target(self):
         self.target_net.load_state_dict(self.q_net.state_dict())
 
-# ──────────────────────────────────────────────
+
 # 5. TRAINING LOOP
-# ──────────────────────────────────────────────
 def train():
     env   = gym.make("CartPole-v1")
     state_dim  = env.observation_space.shape[0]   # 4
@@ -195,9 +178,7 @@ def train():
     env.close()
     return agent, scores, avg_scores, losses
 
-# ──────────────────────────────────────────────
 # 6. PLOTTING
-# ──────────────────────────────────────────────
 def plot_results(scores, avg_scores, losses):
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
     fig.suptitle("DQN on CartPole-v1", fontsize=14, fontweight='bold')
@@ -224,9 +205,7 @@ def plot_results(scores, avg_scores, losses):
     print("\nPlot saved as rl_results.png")
     plt.show()
 
-# ──────────────────────────────────────────────
 # 7. EVALUATION (no exploration)
-# ──────────────────────────────────────────────
 def evaluate(agent, n_episodes=10):
     env = gym.make("CartPole-v1", render_mode="human")
     print(f"\nEvaluating trained agent for {n_episodes} episodes...")
@@ -247,9 +226,7 @@ def evaluate(agent, n_episodes=10):
     env.close()
     print(f"\nMean eval score: {np.mean(eval_scores):.2f}")
 
-# ──────────────────────────────────────────────
 # 8. MAIN
-# ──────────────────────────────────────────────
 if __name__ == "__main__":
     agent, scores, avg_scores, losses = train()
     plot_results(scores, avg_scores, losses)
@@ -257,6 +234,3 @@ if __name__ == "__main__":
     # Save the trained model
     torch.save(agent.q_net.state_dict(), "dqn_cartpole.pth")
     print("Model saved as dqn_cartpole.pth")
-
-    # Optional: watch it play (comment out if no display)
-    # evaluate(agent, n_episodes=5)
